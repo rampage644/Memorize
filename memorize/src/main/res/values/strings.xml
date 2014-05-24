@@ -2,6 +2,6 @@
 <resources>
 
     <string name="app_name">Memorize</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="show_start_text">Tap to start</string>
 
 </resources>

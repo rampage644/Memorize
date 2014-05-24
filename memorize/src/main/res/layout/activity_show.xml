@@ -5,8 +5,15 @@
     tools:context="${packageName}.${activityClass}">
 
     <TextView
-        android:text="@string/hello_world"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/textView"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:editable="false"
+        android:text="@string/show_start_text"
+        android:textSize="32dp"
+        android:gravity="center"
+        android:clickable="true"
+        android:onClick="onClick" />
 </RelativeLayout>
