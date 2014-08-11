@@ -1,0 +1,45 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="${packageName}.${activityClass}" >
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:ems="10"
+        android:id="@+id/number_input"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"/>
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/check_next_btn_text"
+        android:id="@+id/next_btn"
+        android:layout_toRightOf="@id/number_input"
+        android:layout_alignBottom="@id/number_input"
+        android:layout_alignTop="@id/number_input"
+        android:width="10dp"
+        android:onClick="next_btn_click"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/check_prev_btn_text"
+        android:id="@+id/prev_btn"
+        android:layout_toLeftOf="@id/number_input"
+        android:layout_alignBottom="@id/number_input"
+        android:layout_alignTop="@id/number_input"
+        android:width="10dp"
+        android:onClick="prev_btn_click"/>
+
+    <GridView
+        android:id="@+id/grid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/number_input">
+    </GridView>
+</RelativeLayout>
