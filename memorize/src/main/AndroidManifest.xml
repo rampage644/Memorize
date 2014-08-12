@@ -16,8 +16,21 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Check"
+            android:name=".CheckActivity"
             android:label="@string/title_activity_check" >
+        </activity>
+        <activity
+            android:name=".DetailsActivity"
+            android:label="@string/title_activity_details" >
+        </activity>
+        <activity
+            android:name=".RootActivity"
+            android:label="@string/title_activity_root" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

@@ -6,14 +6,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
 
 import com.example.memorize.memorize.R;
 
-public class Check extends Activity {
-    public Integer[] getNumbers() {
+public class CheckActivity extends Activity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+    public int[] getNumbers() {
         return mNumbers;
     }
 
@@ -21,8 +22,8 @@ public class Check extends Activity {
         return mIndex;
     }
 
-    private Integer[] mNumbers = null;
-    private ArrayAdapter<Integer> adapter = null;
+    private int[] mNumbers = null;
+    private MemorizeAdapter adapter = null;
     private int mIndex = 0;
     private int mCount = 100;
     public static final int INVALID_NUMBER = -1;
@@ -34,17 +35,17 @@ public class Check extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check);
 
-        this.mNumbers = new Integer[mCount];
+        this.mNumbers = new int[mCount];
         for (int i=0;i<mNumbers.length;i++) {
             mNumbers[i] = INVALID_NUMBER;
         }
 
         input = (EditText) findViewById(R.id.number_input);
         grid = (GridView) findViewById(R.id.grid);
-        adapter = new ArrayAdapter<Integer>(this,
-                R.layout.grid_item, R.id.grid_item, mNumbers);
+        adapter = new MemorizeAdapter(this,
+                mNumbers, null, null);
         grid.setAdapter(adapter);
-        grid.setNumColumns(10);
+        grid.setOnItemClickListener(this);
     }
 
 
@@ -82,7 +83,6 @@ public class Check extends Activity {
     }
 
     private void process_input() {
-        Log.d("!!!!", String.format("index=%d", mIndex));
         if (mIndex >= 0 && mIndex < mCount) {
             try {
                 mNumbers[mIndex] = Integer.parseInt(input.getText().toString());
@@ -97,5 +97,30 @@ public class Check extends Activity {
         else
             input.setText("");
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        if (i >= 0 && i < mCount) {
+            mIndex = i;
+            process_data();
+        }
+
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+        if (i >= 0 && i < mCount) {
+            int value = mNumbers[i];
+            mNumbers[i] = INVALID_NUMBER;
+            for (int j=i+1;j<mNumbers.length;++j) {
+                int tmp = mNumbers[j];
+                mNumbers[j] = value;
+                value = tmp;
+            }
+            adapter.notifyDataSetChanged();
+            return true;
+        }
+        return false;
     }
 }

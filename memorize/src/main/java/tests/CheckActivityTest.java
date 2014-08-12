@@ -5,15 +5,15 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.test.UiThreadTest;
 import android.widget.EditText;
 
-import com.example.memorize.memorize.Check;
+import com.example.memorize.memorize.CheckActivity;
 import com.example.memorize.memorize.R;
 
 
-public class CheckActivityTest extends ActivityInstrumentationTestCase2<Check> {
-    private Check mActivity;
+public class CheckActivityTest extends ActivityInstrumentationTestCase2<CheckActivity> {
+    private CheckActivity mActivity;
 
     public CheckActivityTest() {
-        super(Check.class);
+        super(CheckActivity.class);
 
         mActivity = null;
     }
@@ -37,11 +37,11 @@ public class CheckActivityTest extends ActivityInstrumentationTestCase2<Check> {
         assertEquals(mActivity.getIndex(), 50);
 
         for (int i=0;i<50;++i) {
-            assertEquals(mActivity.getNumbers()[i].intValue(), i);
+            assertEquals(mActivity.getNumbers()[i], i);
         }
 
         for (int i=50;i<mActivity.getNumbers().length;++i) {
-            assertEquals(mActivity.getNumbers()[i].intValue(), Check.INVALID_NUMBER);
+            assertEquals(mActivity.getNumbers()[i], CheckActivity.INVALID_NUMBER);
         }
     }
 
@@ -58,8 +58,23 @@ public class CheckActivityTest extends ActivityInstrumentationTestCase2<Check> {
             mActivity.next_btn_click(null);
         }
         assertEquals(mActivity.getIndex(), mActivity.getNumbers().length-1);
-
-
     }
+
+    @UiThreadTest
+    public void test_shifting() {
+        EditText input = (EditText) mActivity.findViewById(R.id.number_input);
+
+        for (int i=0;i<50;++i) {
+            input.setText(Integer.toString(i));
+            mActivity.next_btn_click(null);
+        }
+
+        mActivity.onItemLongClick(null, null, 2, 2);
+        assertEquals(mActivity.getNumbers()[2], CheckActivity.INVALID_NUMBER);
+        for (int i=3;i<51;++i) {
+            assertEquals(mActivity.getNumbers()[i], i-1);
+        }
+    }
+
 
 }
