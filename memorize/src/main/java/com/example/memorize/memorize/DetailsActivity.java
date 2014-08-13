@@ -1,17 +1,38 @@
 package com.example.memorize.memorize;
 
 import android.app.Activity;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import com.example.memorize.memorize.R;
+
+import java.nio.ByteBuffer;
 
 public class DetailsActivity extends Activity {
+    private MemorizeAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
+
+        int ID = getIntent().getIntExtra(RootActivity.ID_KEY, -1);
+        int count = getIntent().getIntExtra(RootActivity.COUNT_KEY, 100);
+
+
+        MemorizeDBOpenHelper helper = new MemorizeDBOpenHelper(this);
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Cursor c = db.query(MemorizeDBOpenHelper.TABLE_NAME,
+            new String[] {"ref,act,time"}, "id = ?", new String[] {Integer.toString(ID)}, null, null, null);
+
+        if (c.moveToFirst()) {
+            int[] ref = ByteBuffer.wrap(c.getBlob(0)).asIntBuffer().array();
+            int[] act = ByteBuffer.wrap(c.getBlob(1)).asIntBuffer().array();
+            int[] time = ByteBuffer.wrap(c.getBlob(2)).asIntBuffer().array();
+            adapter = new MemorizeAdapter(this, ref, act, time);
+        }
+
     }
 
 

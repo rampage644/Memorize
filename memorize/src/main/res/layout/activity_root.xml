@@ -13,6 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="New session"
+        android:onClick="new_session_btn_clicked"
         android:id="@+id/root_session_btn"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
@@ -22,6 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="History"
+        android:onClick="history_btn_clicked"
         android:id="@+id/root_history_btn"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/root_session_btn" />

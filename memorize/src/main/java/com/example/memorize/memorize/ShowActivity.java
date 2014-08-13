@@ -1,10 +1,15 @@
 package com.example.memorize.memorize;
 
 import android.app.Activity;
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.Random;
 import android.util.Log;
 
@@ -16,6 +21,8 @@ public class ShowActivity extends Activity {
     private TextView mNumberView = null;
     private long mLastTime = 0;
 
+    private int mID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,6 +30,8 @@ public class ShowActivity extends Activity {
 
         mNumberView = (TextView) findViewById(R.id.textView);
 
+        mID = getIntent().getIntExtra(RootActivity.ID_KEY, -1);
+        mCount = getIntent().getIntExtra(RootActivity.COUNT_KEY, 100);
     }
 
     public void onClick(View v) {
@@ -62,6 +71,18 @@ public class ShowActivity extends Activity {
         mIndex = -1;
         mNumberView.setText(R.string.show_start_text);
         mNumberView.setTextSize(32);
+
+        MemorizeDBOpenHelper helper = new MemorizeDBOpenHelper(this);
+        SQLiteDatabase db = helper.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        ByteBuffer bb = ByteBuffer.allocate(4 * mNumbers.length);
+        bb.asIntBuffer().put(IntBuffer.wrap(mNumbers));
+        byte[] buffer = new byte[4 * mNumbers.length];
+        bb.get(buffer);
+        cv.put("ref", buffer);
+        db.update(MemorizeDBOpenHelper.TABLE_NAME, cv, "id = ?", new String[] {Integer.toString(mID)});
+
+        finish();
     }
 
     private void next() {

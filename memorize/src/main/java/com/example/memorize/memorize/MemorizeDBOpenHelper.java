@@ -10,7 +10,7 @@ import android.content.Context;
 
 public class MemorizeDBOpenHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
-    private static final String TABLE_NAME = "memo";
+    public static final String TABLE_NAME = "memo";
     private static final String TABLE_CREATE =
             "CREATE TABLE " + TABLE_NAME + " IF NOT EXISTS" +
                     " (_id integer primary key autoincrement, ref blob, act blob, time blob, count integer);";
