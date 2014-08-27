@@ -1,9 +1,12 @@
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.SystemClock;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.UiThreadTest;
-import android.util.Log;
 import android.widget.TextView;
 
+import com.example.memorize.memorize.MemorizeDBOpenHelper;
 import com.example.memorize.memorize.R;
 import com.example.memorize.memorize.ShowActivity;
 
@@ -108,7 +111,47 @@ public class ShowActivityTest extends ActivityInstrumentationTestCase2<ShowActiv
     }
 
     @UiThreadTest
-    public void test_start_check_activity() {
+    public void test_writing_results_on_finish() {
+        MemorizeDBOpenHelper helper = new MemorizeDBOpenHelper(mActivity);
+        SQLiteDatabase db = helper.getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+        cv.putNull("ref");
+        cv.putNull("time");
+        cv.putNull("act");
+        cv.put("count", 100);
+        cv.put("_id", -1);
+        db.insert("memo", null, cv);
+
+
+        // do the job
+        mActivity.onClick(null);
+
+        for (int i=0;i<mActivity.getCount();i++) {
+            // do the round
+            SystemClock.sleep(10);
+            mActivity.onClick(null);
+        }
+        int[] numbers = mActivity.getNumbers();
+
+        db = helper.getReadableDatabase();
+
+        Cursor c = db.query(MemorizeDBOpenHelper.TABLE_NAME,
+                new String[] {"ref","time"}, "_id=?", new String[]{Integer.toString(-1)}, null, null, null);
+
+        assertEquals(c.getCount(), 1);
+        assertTrue(c.moveToFirst());
+
+        int ref[] = new int[numbers.length];
+        int times[] = new int[numbers.length];
+        MemorizeDBOpenHelper.convertByteArrayToIntArray(c.getBlob(0), ref);
+        MemorizeDBOpenHelper.convertByteArrayToIntArray(c.getBlob(1), times);
+
+        for (int i=0;i<numbers.length;++i)
+            assertEquals(String.format("%d != %d at %d", numbers[i], ref[i], i), numbers[i], ref[i]);
+
+        for (int i=0;i<numbers.length;++i)
+            assertTrue(String.format("%d < %d at %d", times[i], 10, i), times[i] >= 10);
 
     }
 

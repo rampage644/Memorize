@@ -8,15 +8,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.Random;
-import android.util.Log;
 
 public class ShowActivity extends Activity {
     private int mCount = 100;
     private int[] mNumbers = null;
-    private long[] mTime = null;
+    private int[] mTime = null;
     private int mIndex = -1;
     private TextView mNumberView = null;
     private long mLastTime = 0;
@@ -41,13 +38,13 @@ public class ShowActivity extends Activity {
             mLastTime = System.currentTimeMillis();
         }
         else if (mIndex >= 0 && mIndex < getCount()) {
-            mTime[mIndex-1] = System.currentTimeMillis() - mLastTime;
+            mTime[mIndex-1] = (int)(System.currentTimeMillis() - mLastTime);
             mLastTime = System.currentTimeMillis();
 
             next();
         }
         else {
-            mTime[mIndex-1] = System.currentTimeMillis() - mLastTime;
+            mTime[mIndex-1] = (int)(System.currentTimeMillis() - mLastTime);
 
             stop();
         }
@@ -56,7 +53,7 @@ public class ShowActivity extends Activity {
 
     private void start() {
         mNumbers = new int[getCount()];
-        mTime = new long[getCount()];
+        mTime = new int[getCount()];
         Random r = new Random();
         for (int i=0; i< getCount(); ++i) {
             mNumbers[i] = r.nextInt(101);
@@ -75,13 +72,15 @@ public class ShowActivity extends Activity {
         MemorizeDBOpenHelper helper = new MemorizeDBOpenHelper(this);
         SQLiteDatabase db = helper.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        ByteBuffer bb = ByteBuffer.allocate(4 * mNumbers.length);
-        bb.asIntBuffer().put(IntBuffer.wrap(mNumbers));
-        byte[] buffer = new byte[4 * mNumbers.length];
-        bb.get(buffer);
-        cv.put("ref", buffer);
-        db.update(MemorizeDBOpenHelper.TABLE_NAME, cv, "id = ?", new String[] {Integer.toString(mID)});
+        byte time_byte[] = new byte[mCount * 4];
+        byte ref_byte[] = new byte[mCount * 4];
+        MemorizeDBOpenHelper.convertIntArrayToByteArray(mNumbers, ref_byte);
+        MemorizeDBOpenHelper.convertIntArrayToByteArray(mTime, time_byte);
+        cv.put("ref", ref_byte);
+        cv.put("time", time_byte);
+        db.update(MemorizeDBOpenHelper.TABLE_NAME, cv, "_id = ?", new String[] {Integer.toString(mID)});
 
+        setResult(this.RESULT_OK);
         finish();
     }
 
@@ -108,7 +107,7 @@ public class ShowActivity extends Activity {
         return mNumbers;
     }
 
-    public long[] getTime() {
+    public int[] getTime() {
         return mTime;
     }
 }

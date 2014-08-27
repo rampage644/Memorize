@@ -92,7 +92,8 @@ public class RootActivity extends Activity {
                                     Intent data) {
         switch (requestCode) {
             case ShowCode:
-                start_check_activity();
+                if (resultCode == ShowActivity.RESULT_OK)
+                    start_check_activity();
                 break;
             case CheckCode:
                 start_details_activty();

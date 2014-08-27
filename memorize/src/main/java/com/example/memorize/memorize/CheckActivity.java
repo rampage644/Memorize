@@ -101,6 +101,7 @@ public class CheckActivity extends Activity implements AdapterView.OnItemClickLi
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        // TODO write test for this action
         if (i >= 0 && i < mCount) {
             mIndex = i;
             process_data();
@@ -110,6 +111,7 @@ public class CheckActivity extends Activity implements AdapterView.OnItemClickLi
 
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+        // TODO what we do here? figure it out, comment, write tests
         if (i >= 0 && i < mCount) {
             int value = mNumbers[i];
             mNumbers[i] = INVALID_NUMBER;
