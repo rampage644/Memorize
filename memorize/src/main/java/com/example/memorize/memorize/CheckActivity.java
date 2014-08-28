@@ -1,6 +1,8 @@
 package com.example.memorize.memorize;
 
 import android.app.Activity;
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -25,7 +27,8 @@ public class CheckActivity extends Activity implements AdapterView.OnItemClickLi
     private int[] mNumbers = null;
     private MemorizeAdapter adapter = null;
     private int mIndex = 0;
-    private int mCount = 100;
+    private int mID;
+    private int mCount;
     public static final int INVALID_NUMBER = -1;
     private EditText input = null;
     private GridView grid = null;
@@ -34,6 +37,8 @@ public class CheckActivity extends Activity implements AdapterView.OnItemClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check);
+        mID = getIntent().getIntExtra(RootActivity.ID_KEY, -1);
+        mCount = getIntent().getIntExtra(RootActivity.COUNT_KEY, 100);
 
         this.mNumbers = new int[mCount];
         for (int i=0;i<mNumbers.length;i++) {
@@ -46,6 +51,7 @@ public class CheckActivity extends Activity implements AdapterView.OnItemClickLi
                 mNumbers, null, null);
         grid.setAdapter(adapter);
         grid.setOnItemClickListener(this);
+
     }
 
 
@@ -73,6 +79,23 @@ public class CheckActivity extends Activity implements AdapterView.OnItemClickLi
         if (mIndex < mCount - 1)
             mIndex++;
         process_data();
+
+        // check if we're ready to finish
+        if (mIndex == mCount - 1) {
+            setResult(this.RESULT_OK);
+            write_result();
+            finish();
+        }
+    }
+
+    private void write_result() {
+        MemorizeDBOpenHelper helper = new MemorizeDBOpenHelper(this);
+        SQLiteDatabase db = helper.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        byte act_byte[] = new byte[mCount * 4];
+        MemorizeDBOpenHelper.convertIntArrayToByteArray(mNumbers, act_byte);
+        cv.put("act", act_byte);
+        db.update(MemorizeDBOpenHelper.TABLE_NAME, cv, "_id = ?", new String[] {Integer.toString(mID)});
     }
 
     public void prev_btn_click(View v) {
@@ -101,17 +124,15 @@ public class CheckActivity extends Activity implements AdapterView.OnItemClickLi
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        // TODO write test for this action
         if (i >= 0 && i < mCount) {
             mIndex = i;
             process_data();
         }
-
     }
 
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-        // TODO what we do here? figure it out, comment, write tests
+        // Insert empty value at place of user click. Shift remaining numbers forward
         if (i >= 0 && i < mCount) {
             int value = mNumbers[i];
             mNumbers[i] = INVALID_NUMBER;
