@@ -4,16 +4,13 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
-
-import com.example.memorize.memorize.R;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class CheckActivity extends Activity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
     public int[] getNumbers() {
@@ -46,6 +43,13 @@ public class CheckActivity extends Activity implements AdapterView.OnItemClickLi
         }
 
         input = (EditText) findViewById(R.id.number_input);
+        input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                next_btn_click(textView);
+                return true;
+            }
+        });
         grid = (GridView) findViewById(R.id.grid);
         adapter = new MemorizeAdapter(this,
                 mNumbers, null, null);
@@ -54,38 +58,16 @@ public class CheckActivity extends Activity implements AdapterView.OnItemClickLi
 
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.check, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     public void next_btn_click(View v) {
         process_input();
-        if (mIndex < mCount - 1)
+        if (mIndex < mCount - 1) {
             mIndex++;
-        process_data();
-
-        // check if we're ready to finish
-        if (mIndex == mCount - 1) {
-            setResult(this.RESULT_OK);
+        } else {
+            setResult(Activity.RESULT_OK);
             write_result();
             finish();
         }
+        process_data();
     }
 
     private void write_result() {
@@ -110,7 +92,9 @@ public class CheckActivity extends Activity implements AdapterView.OnItemClickLi
             try {
                 mNumbers[mIndex] = Integer.parseInt(input.getText().toString());
             }
-            catch (NumberFormatException e) {}
+            catch (NumberFormatException e) {
+                Toast.makeText(this, "Problem with input", Toast.LENGTH_SHORT);
+            }
         }
     }
 
@@ -132,6 +116,7 @@ public class CheckActivity extends Activity implements AdapterView.OnItemClickLi
 
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+        // TODO not working on real device!
         // Insert empty value at place of user click. Shift remaining numbers forward
         if (i >= 0 && i < mCount) {
             int value = mNumbers[i];

@@ -5,12 +5,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.BaseAdapter;
-import android.widget.TextView;
 import android.content.Context;
 
-/**
- * Created by ramp on 8/12/14.
- */
 public class MemorizeAdapter extends BaseAdapter {
     private Context mCtx;
     private int[] mReference;
@@ -69,7 +65,7 @@ public class MemorizeAdapter extends BaseAdapter {
         bld.append('\n');
 
         if (mTimes != null)
-            bld.append(Double.toString(mTimes[i]*0.001));
+            bld.append(String.format("%.2f", mTimes[i]*0.001));
         else
             bld.append(" - ");
 

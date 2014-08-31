@@ -6,14 +6,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.View;
-import android.view.MenuItem;
-import com.example.memorize.memorize.R;
 
 public class RootActivity extends Activity {
     private int mID;
-    private int mCount = 100;
+    private int mCount;
 
     public static final int ShowCode = 1;
     public static final int CheckCode = 2;
@@ -27,41 +24,22 @@ public class RootActivity extends Activity {
         setContentView(R.layout.activity_root);
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.root, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     public void new_session_btn_clicked(View v) {
         MemorizeDBOpenHelper helper = new MemorizeDBOpenHelper(this);
         SQLiteDatabase db = helper.getWritableDatabase();
 
+        // TODO move to settings
+        mCount = 100;
         ContentValues cv = new ContentValues();
         cv.putNull("ref");
         cv.putNull("time");
         cv.putNull("act");
-        cv.put("count", 100);
+        cv.put("count", mCount);
         db.insert("memo", null, cv);
         Cursor c = db.query("memo", new String[] {"_id"}, null, null, null, null, "_id desc", "1");
 
         if (c.moveToFirst()) {
             mID = c.getInt(0);
-            mCount = 100;
             // start show activity with id and count
             start_show_activity();
          }
@@ -96,7 +74,8 @@ public class RootActivity extends Activity {
                     start_check_activity();
                 break;
             case CheckCode:
-                start_details_activty();
+                if (resultCode == CheckActivity.RESULT_OK)
+                    start_details_activty();
                 break;
         }
     }

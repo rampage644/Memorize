@@ -7,11 +7,12 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="numberDecimal"
+        android:inputType="phone"
         android:ems="10"
         android:id="@+id/number_input"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:imeOptions="actionNext" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -44,6 +45,9 @@
         android:columnWidth="50dp"
         android:numColumns="auto_fit"
         android:horizontalSpacing="5dp"
-        android:verticalSpacing="5dp" >
+        android:verticalSpacing="5dp"
+        android:focusableInTouchMode="false"
+        android:focusable="false"
+        android:longClickable="true">
     </GridView>
 </RelativeLayout>
